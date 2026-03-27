@@ -1,6 +1,8 @@
 package org.main.security;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.main.common.ApiResponse;
+import org.main.util.JacksonUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -26,7 +28,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/error").permitAll()
+                        .requestMatchers("/login", "/auth/login", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -37,8 +39,7 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout.logoutUrl("/logout"))
                 .httpBasic(Customizer.withDefaults())
-//                .formLogin(form -> form.disable())
-                .formLogin(Customizer.withDefaults())
+                .formLogin(form -> form.disable())
                 .securityContext(context -> context.securityContextRepository(new HttpSessionSecurityContextRepository()));
         return http.build();
     }
@@ -59,9 +60,7 @@ public class SecurityConfig {
             PasswordEncoder passwordEncoder
     ) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        // 绑定你的用户查询类
         provider.setUserDetailsService(userDetailsService);
-        // 绑定你的密码加密器（关键！这行你没写！）
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
@@ -70,6 +69,6 @@ public class SecurityConfig {
         response.setStatus(status);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{\"code\":" + status + ",\"message\":\"" + message + "\"}");
+        response.getWriter().write(JacksonUtil.toJson(ApiResponse.fail(status, message)));
     }
 }
