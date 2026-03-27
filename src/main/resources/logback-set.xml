@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<!-- %m输出的信息, %p日志级别, %t线程名, %d日期, %c类的全名, %i索引 -->
+<!-- appender是configuration的子节点,是负责写日志的组件 -->
+<!-- ConsoleAppender把日志输出到控制台 -->
+<xml debug="false" scan="false" scanPeriod="60 seconds">
+	
+	<!-- 日志输出根路径 -->
+    <!-- <property name="LOG_HOME" value="D:/log"/> -->
+   	<!-- 项目名称 -->
+    <!-- <property name="appName" value="HWWEB"/> -->
+    <springProperty scope="context" name="appName" source="logging.appName" />
+    <!-- <contextName>${appName}</contextName> -->
+
+	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+    <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="Max_History" value="1800"/>
+    <property name="Max_FileSize" value="10MB"/>
+    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [${LOG_LEVEL_PATTERN:-%5p}] [${PID:- }] [%15.15t] %msg%n"/>
+    <property name="FILE_LOG_CHARSET" value="UTF-8"/>
+    <property name="FILE_PATH" value="${LOG_PATH}${file.separator}${appName}${file.separator}"/>
+    <property name="FILE_PATH_HIS" value="${LOG_PATH}${file.separator}${appName}${file.separator}history${file.separator}"/>
+    
+    <!-- 定义控制台输出 -->
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+       <!--  RestlessThread.java 127 线程号[127]功能号[209009]交易时间[2017-05-14 22:07:12]日志号[20170514220711055937] 信息:
+		发送节点209009错误或警告信息至业务员00199038成功 -->
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </layout>
+    </appender>
+
+    <appender name="SYS_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 支持多JVM同时操作同一个日志文件 -->
+		<!--<prudent>true</prudent>-->
+        <!-- 指定日志文件的名称 -->
+        <file>${FILE_PATH}SYS-out.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${FILE_PATH_HIS}SYS-out.%d.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <MaxHistory>${Max_History}</MaxHistory>
+            <MaxFileSize>${Max_FileSize}</MaxFileSize>
+        </rollingPolicy>
+        <encoder>
+			<pattern>${FILE_LOG_PATTERN}</pattern>
+			<charset>${FILE_LOG_CHARSET}</charset>
+		</encoder>
+       <filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level> 
+			<onMatch>ACCEPT</onMatch> 
+			<onMismatch>DENY</onMismatch> 
+		</filter>
+    </appender>
+	
+	<appender name="SYS_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 支持多JVM同时操作同一个日志文件 -->
+		<!--<prudent>true</prudent>-->
+        <!-- 指定日志文件的名称 -->
+        <file>${FILE_PATH}SYS-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${FILE_PATH_HIS}SYS-error.%d.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <MaxHistory>${Max_History}</MaxHistory>
+            <MaxFileSize>${Max_FileSize}</MaxFileSize>
+        </rollingPolicy>
+        <encoder>
+			<pattern>${FILE_LOG_PATTERN}</pattern>
+			<charset>${FILE_LOG_CHARSET}</charset>
+		</encoder>
+       <filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level> 
+			<onMatch>ACCEPT</onMatch> 
+			<onMismatch>DENY</onMismatch> 
+		</filter>
+    </appender>
+    
+	<appender name="outinfo" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 支持多JVM同时操作同一个日志文件 -->
+		<!--<prudent>true</prudent>-->
+        <!-- 指定日志文件的名称 -->
+        <file>${FILE_PATH}APP-info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${FILE_PATH_HIS}APP-info.%d.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <MaxHistory>${Max_History}</MaxHistory>
+            <MaxFileSize>${Max_FileSize}</MaxFileSize>
+        </rollingPolicy>
+        <encoder>
+			<pattern>${FILE_LOG_PATTERN}</pattern>
+			<charset>${FILE_LOG_CHARSET}</charset>
+		</encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level> 
+			<onMatch>ACCEPT</onMatch> 
+			<onMismatch>DENY</onMismatch> 
+		</filter>
+    </appender>
+
+	<appender name="outerror" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 支持多JVM同时操作同一个日志文件 -->
+		<!--<prudent>true</prudent>-->
+        <!-- 指定日志文件的名称 -->
+        <file>${FILE_PATH}APP-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${FILE_PATH_HIS}APP-error.%d.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <MaxHistory>${Max_History}</MaxHistory>
+            <MaxFileSize>${Max_FileSize}</MaxFileSize>
+        </rollingPolicy>
+        <encoder>
+			<pattern>${FILE_LOG_PATTERN}</pattern>
+			<charset>${FILE_LOG_CHARSET}</charset>
+		</encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level> 
+			<onMatch>ACCEPT</onMatch> 
+			<onMismatch>DENY</onMismatch> 
+		</filter>
+    </appender>
+    <!-- 日志输出级别 -->
+    <!-- 不同的业务逻辑日志打印到指定文件夹-->
+    <logger name="outinfo" additivity="false" level="INFO">
+        <appender-ref ref="outinfo"/>
+    </logger>
+    <logger name="outerror" additivity="false" level="ERROR">
+        <appender-ref ref="outerror"/>
+    </logger>
+
+	<logger name="org.springframework" level="INFO"  additivity="false"/>
+    <!--info和error分开打印-->
+    <root>
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="SYS_INFO"/>
+        <appender-ref ref="SYS_ERROR"/>
+    </root>
+</xml>

@@ -1,0 +1,26 @@
+# Tomcat
+server:
+  port: 8080
+
+# Spring
+spring:
+  application:
+    # 搴旂敤鍚嶇О
+    name: y-main
+  profiles:
+    # 鐜閰嶇疆
+    active: ${SERVER_ENV:${SERVER_EVN:dev}}
+  main:
+    allow-bean-definition-overriding: true
+  data:
+    redis:
+      repositories:
+        enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+#  cache:
+#    type: caffeine
+#    caffeine:
+#      spec: initialCapacity=10,maximumSize=200,expireAfterWrite=10m
