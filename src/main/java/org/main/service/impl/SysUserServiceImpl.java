@@ -28,13 +28,13 @@ public class SysUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemUser
     }
 
     @Override
-    public LoginUserVO login(String username, String password) {
-        if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
+    public LoginUserVO login(String userno, String password) {
+        if (!StringUtils.hasText(userno) || !StringUtils.hasText(password)) {
             throw new IllegalArgumentException("用户名和密码不能为空");
         }
 
         LambdaQueryWrapper<SystemUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SystemUser::getUsername, username);
+        queryWrapper.eq(SystemUser::getUserno, userno);
         SystemUser systemUser = this.getOne(queryWrapper);
         if (systemUser == null) {
             throw new IllegalArgumentException("用户不存在");

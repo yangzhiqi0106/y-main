@@ -8,6 +8,12 @@ import org.main.entity.SystemUser;
 import org.main.service.ISysUserService;
 import org.main.vo.LoginUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -27,6 +34,9 @@ public class SysUserController {
 
     @Autowired
     private ISysUserService sysUserService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @GetMapping
     public List<SystemUser> queryAll() {
@@ -66,8 +76,20 @@ public class SysUserController {
     }
 
     @PostMapping(value = "/login")
-    public LoginUserVO login(@RequestBody LoginRequest loginRequest) {
-        return sysUserService.login(loginRequest.getUsername(), loginRequest.getPassword());
+    public LoginUserVO login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUserno(), loginRequest.getPassword())
+        );
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        request.getSession(true).setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                securityContext
+        );
+
+        return sysUserService.login(loginRequest.getUserno(), loginRequest.getPassword());
     }
 
 }
