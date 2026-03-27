@@ -3,8 +3,10 @@ package org.main.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.main.dto.LoginRequest;
 import org.main.entity.SystemUser;
 import org.main.service.ISysUserService;
+import org.main.vo.LoginUserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -61,6 +63,11 @@ public class SysUserController {
     @DeleteMapping(value = "/{id}")
     public boolean delete(@PathVariable Long id) {
         return sysUserService.removeById(id);
+    }
+
+    @PostMapping(value = "/login")
+    public LoginUserVO login(@RequestBody LoginRequest loginRequest) {
+        return sysUserService.login(loginRequest.getUsername(), loginRequest.getPassword());
     }
 
 }
