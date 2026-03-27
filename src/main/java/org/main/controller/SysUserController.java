@@ -50,14 +50,12 @@ public class SysUserController {
 
     @PostMapping
     public boolean save(@RequestBody SystemUser systemUser) {
-        systemUser.setId(null);
-        return sysUserService.save(systemUser);
+        return sysUserService.saveUser(systemUser);
     }
 
     @PutMapping(value = "/{id}")
     public boolean update(@PathVariable Long id, @RequestBody SystemUser systemUser) {
-        systemUser.setId(id);
-        return sysUserService.updateById(systemUser);
+        return sysUserService.updateUser(id, systemUser);
     }
 
     @DeleteMapping(value = "/{id}")
