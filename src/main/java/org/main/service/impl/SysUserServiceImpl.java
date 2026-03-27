@@ -27,38 +27,6 @@ public class SysUserServiceImpl extends ServiceImpl<SystemUserMapper, SystemUser
         return this.updateById(systemUser);
     }
 
-    @Override
-    public LoginUserVO login(String userno, String password) {
-        if (!StringUtils.hasText(userno) || !StringUtils.hasText(password)) {
-            throw new IllegalArgumentException("用户名和密码不能为空");
-        }
-
-        LambdaQueryWrapper<SystemUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(SystemUser::getUserno, userno);
-        SystemUser systemUser = this.getOne(queryWrapper);
-        if (systemUser == null) {
-            throw new IllegalArgumentException("用户不存在");
-        }
-
-        String encryptedPassword = GmCryptoUtil.sm3Hex(password);
-        if (!encryptedPassword.equals(systemUser.getPassword())) {
-            throw new IllegalArgumentException("密码错误");
-        }
-
-        LoginUserVO vo = new LoginUserVO();
-        vo.setId(systemUser.getId());
-        vo.setUserno(systemUser.getUserno());
-        vo.setUsername(systemUser.getUsername());
-        vo.setPhone(systemUser.getPhone());
-        vo.setEmail(systemUser.getEmail());
-        vo.setSex(systemUser.getSex());
-        vo.setAvatar(systemUser.getAvatar());
-        vo.setStatus(systemUser.getStatus());
-        vo.setCreateTime(systemUser.getCreateTime());
-        vo.setUpdateTime(systemUser.getUpdateTime());
-        return vo;
-    }
-
     private void encodePassword(SystemUser systemUser) {
         if (StringUtils.hasText(systemUser.getPassword())) {
             systemUser.setPassword(GmCryptoUtil.sm3Hex(systemUser.getPassword()));

@@ -10,5 +10,4 @@ public interface ISysUserService extends IService<SystemUser> {
 
     boolean updateUser(Long id, SystemUser systemUser);
 
-    LoginUserVO login(String username, String password);
 }

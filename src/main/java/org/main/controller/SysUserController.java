@@ -75,21 +75,4 @@ public class SysUserController {
         return sysUserService.removeById(id);
     }
 
-    @PostMapping(value = "/login")
-    public LoginUserVO login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUserno(), loginRequest.getPassword())
-        );
-
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authentication);
-        SecurityContextHolder.setContext(securityContext);
-        request.getSession(true).setAttribute(
-                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                securityContext
-        );
-
-        return sysUserService.login(loginRequest.getUserno(), loginRequest.getPassword());
-    }
-
 }

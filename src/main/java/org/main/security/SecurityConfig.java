@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,7 +26,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/login", "/error").permitAll()
+                        .requestMatchers("/login", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -34,9 +35,10 @@ public class SecurityConfig {
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 writeJsonError(response, HttpServletResponse.SC_FORBIDDEN, "无权限访问"))
                 )
-                .logout(logout -> logout.logoutUrl("/user/logout"))
+                .logout(logout -> logout.logoutUrl("/logout"))
                 .httpBasic(Customizer.withDefaults())
-                .formLogin(form -> form.disable())
+//                .formLogin(form -> form.disable())
+                .formLogin(Customizer.withDefaults())
                 .securityContext(context -> context.securityContextRepository(new HttpSessionSecurityContextRepository()));
         return http.build();
     }
@@ -49,6 +51,19 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new Sm3PasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(
+            SysUserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder
+    ) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        // 绑定你的用户查询类
+        provider.setUserDetailsService(userDetailsService);
+        // 绑定你的密码加密器（关键！这行你没写！）
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
     }
 
     private void writeJsonError(HttpServletResponse response, int status, String message) throws java.io.IOException {
